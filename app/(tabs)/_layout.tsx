@@ -9,14 +9,14 @@ const TabLayout = () => {
     const insets = useSafeAreaInsets();
     const TabIcon = ({focused, icon}: TabIconProps) =>{
         return(
-            <View className="tabs-icon">
+            <View className="tabs-icon">//this is a view which will contain icons for tab navigation
                 <View className={clsx("tabs-pill", focused && 'tabs-active')}>
                     <Image source={icon} resizeMode="contain" className="tabs-glyph"/>
                 </View>
             </View>
         )
     }
-    return(
+    return(//this is all the properties it has and idt i have to explain each and every one
         <Tabs screenOptions={{ headerShown: false, 
             tabBarShowLabel: false,
             tabBarStyle: {

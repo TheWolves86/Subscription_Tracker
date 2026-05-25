@@ -12,11 +12,14 @@ import UpcomingSubscriptionCard from "@/Components/UpcomingSubscriptionCard";
 import SubscriptionCard from "@/Components/SubscriptionCard";
 import { useState } from "react";
 
+//This is the main page
+
 const SafeAreaView = styled(RNSafeAreaView);
 export default function App() {
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null)
   return (
     <SafeAreaView className="flex-1 bg-background p-3">
+//We make a full flatlist cause we need a smotth scroll screen
       <FlatList
         data={HOME_SUBSCRIPTIONS}
         keyExtractor={(item) => item.id}

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({//All it does is render fonts ig
     'sans-regular': require('../assets/fonts/PlusJakartaSans-Regular.ttf'),
     'sans-bold': require('../assets/fonts/PlusJakartaSans-Bold.ttf'),
     'sans-medium': require('../assets/fonts/PlusJakartaSans-Medium.ttf'),
