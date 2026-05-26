@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import "@/global.css"
+import { useUser } from "@clerk/expo";
 import { Text, View, Image, FlatList } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
@@ -16,10 +16,16 @@ import { useState } from "react";
 
 const SafeAreaView = styled(RNSafeAreaView);
 export default function App() {
+  const { user } = useUser();
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null)
+  const displayName =
+    user?.firstName ||
+    user?.primaryEmailAddress?.emailAddress?.split("@")[0] ||
+    HOME_USER.name;
+  const avatarSource = user?.imageUrl ? { uri: user.imageUrl } : image.avatar;
+
   return (
     <SafeAreaView className="flex-1 bg-background p-3">
-//We make a full flatlist cause we need a smotth scroll screen
       <FlatList
         data={HOME_SUBSCRIPTIONS}
         keyExtractor={(item) => item.id}
@@ -31,8 +37,8 @@ export default function App() {
           <>
             <View className="home-header">
               <View className="home-user">
-                <Image source={image.avatar} className="home-avatar" />
-                <Text className="home-user-name">{HOME_USER.name}</Text>
+                <Image source={avatarSource} className="home-avatar" />
+                <Text className="home-user-name">{displayName}</Text>
               </View>
               <Image source={icons.add} className="home-add-icon" />
             </View>

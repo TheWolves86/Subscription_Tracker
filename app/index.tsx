@@ -1,4 +1,10 @@
-import { Redirect } from 'expo-router';
-export default function Layout() {//This was used and it redirects to the index.tsx which is in app folder
-  return <Redirect href="/(tabs)" />;
+import { useAuth } from "@clerk/expo";
+import { Redirect } from "expo-router";
+
+export default function Index() {
+  const { isLoaded, isSignedIn } = useAuth();
+
+  if (!isLoaded) return null;
+
+  return <Redirect href={isSignedIn ? "/(tabs)" : "/(auth)/sign-in"} />;
 }

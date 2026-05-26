@@ -1,8 +1,7 @@
 import { View, Text, Image, Pressable, } from 'react-native'
 import React from 'react'
 import { formatCurrency, formatSubscriptionDateTime } from '@/lib/utils'
-import clsx from 'clsx'
-import dayjs from 'dayjs'
+import { clsx } from 'clsx'
 
 const SubscriptionCard = ({name, price, currency, icon, billing, color, category, plan, renewalDate, onPress, expanded, paymentMethod, status, startDate}: SubscriptionCardProps) => {
     

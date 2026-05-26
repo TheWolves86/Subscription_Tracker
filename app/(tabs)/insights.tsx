@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import React from 'react'
 import { styled } from "nativewind";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
@@ -15,5 +15,3 @@ const insights = () => {//for now this is dummy
 }
 
 export default insights
-
-const styles = StyleSheet.create({})
