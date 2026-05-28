@@ -1,7 +1,24 @@
-import { View, Text, Image, Pressable, } from 'react-native'
-import React from 'react'
-import { formatCurrency, formatSubscriptionDateTime } from '@/lib/utils'
-import { clsx } from 'clsx'
+import { formatCurrency, formatSubscriptionDateTime } from '@/lib/utils';
+import { clsx } from 'clsx';
+import React from 'react';
+import { Image, Pressable, Text, View, } from 'react-native';
+
+interface SubscriptionCardProps {
+    name: string;
+    price: number;
+    currency?: string;
+    icon: any;
+    billing: string;
+    color?: string;
+    category?: string;
+    plan?: string;
+    renewalDate?: string;
+    onPress: () => void;
+    expanded: boolean;
+    paymentMethod?: string;
+    status?: string;
+    startDate?: string;
+}
 
 const SubscriptionCard = ({name, price, currency, icon, billing, color, category, plan, renewalDate, onPress, expanded, paymentMethod, status, startDate}: SubscriptionCardProps) => {
     
@@ -12,7 +29,7 @@ const SubscriptionCard = ({name, price, currency, icon, billing, color, category
                 <Image source={icon} className="sub-icon"/>
                 <View className="sub-copy">
                     <Text className="sub-title" numberOfLines={1}>{name}</Text>
-                    <Text numberOfLines={1} ellipsizeMode='tail' className='sub-meta'>{category ?.trim() || plan?.trim() || (renewalDate? formatSubscriptionDateTime(renewalDate): '')}</Text>
+                    <Text numberOfLines={1} ellipsizeMode='tail' className='sub-meta'>{category?.trim() || plan?.trim() || (renewalDate? formatSubscriptionDateTime(renewalDate): '')}</Text>
                 </View>
             </View>
             <View className='sub-price-box'>
@@ -21,7 +38,7 @@ const SubscriptionCard = ({name, price, currency, icon, billing, color, category
             </View>
         </View>
         {expanded && (
-            <View className='sub-bdy'>
+            <View className='sub-body'>
                 <View className='sub-details'>
                     <View className='sub-row'>
                         <View className='sub-row-copy'>

@@ -1,10 +1,17 @@
-import { useAuth } from "@clerk/expo";
+import { SubscriptionProvider } from "@/Components/SubscriptionContext";
 import { tabs } from "@/constants/data";
-import { Redirect, Tabs } from "expo-router";
-import { View, Image } from "react-native";
-import { clsx } from "clsx";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, components } from "@/constants/theme";
+import { useAuth } from "@clerk/expo";
+import { clsx } from "clsx";
+import { Redirect, Tabs } from "expo-router";
+import { Image, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+interface TabIconProps {
+    focused: boolean;
+    icon: any;
+}
+
 const tabBar = components.tabBar;
 const TabLayout = () => {
     const { isLoaded, isSignedIn } = useAuth();
@@ -26,6 +33,7 @@ const TabLayout = () => {
     }
 
     return(
+        <SubscriptionProvider>
         <Tabs screenOptions={{ headerShown: false, 
             tabBarShowLabel: false,
             tabBarStyle: {
@@ -56,6 +64,7 @@ const TabLayout = () => {
                 ) }} />
             ))}
         </Tabs>
+        </SubscriptionProvider>
     )
 }
 export default TabLayout

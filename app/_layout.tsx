@@ -1,11 +1,11 @@
 import "@/global.css";
 
-import { ClerkProvider } from "@clerk/expo";
+import { ClerkProvider, useAuth } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
-import { SplashScreen, Stack } from "expo-router";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
+import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,18 +27,24 @@ export default function RootLayout() {
     "sans-light": require("../assets/fonts/PlusJakartaSans-Light.ttf"),
   });
 
-  useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
+  function SplashGate({ children }: { children: React.ReactNode }) {
+    const { isLoaded } = useAuth();
 
-  if (!fontsLoaded) return null;
+    useEffect(() => {
+      if (fontsLoaded && isLoaded) {
+        SplashScreen.hideAsync();
+      }
+    }, [fontsLoaded, isLoaded]);
+
+    return <>{children}</>;
+  }
 
   return (
     <ClerkProvider publishableKey={clerkPublishableKey} tokenCache={tokenCache}>
       <SafeAreaProvider>
-        <Stack screenOptions={{ headerShown: false }} />
+        <SplashGate>
+          <Stack screenOptions={{ headerShown: false }} />
+        </SplashGate>
       </SafeAreaProvider>
     </ClerkProvider>
   );
