@@ -1,4 +1,5 @@
 import { useSignUp } from "@clerk/expo";
+import { clsx } from "clsx";
 import { type Href, Link, useRouter } from "expo-router";
 import { styled } from "nativewind";
 import { useState } from "react";
@@ -13,7 +14,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
-import { clsx } from "clsx";
 
 import {
   getClerkErrorMessage,
@@ -27,7 +27,7 @@ const tabsHref = "/(tabs)" as Href;
 
 export default function SignUp() {
   const router = useRouter();
-  const { signUp, errors, fetchStatus } = useSignUp();
+  const { signUp } = useSignUp();
 
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
@@ -36,18 +36,17 @@ export default function SignUp() {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [localErrors, setLocalErrors] = useState<Record<string, string | null>>({});
   const [formError, setFormError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isFetching = fetchStatus === "fetching";
   const isVerifyingEmail =
     pendingVerification ||
-    (signUp.status === "missing_requirements" &&
-      signUp.unverifiedFields.includes("email_address") &&
-      signUp.missingFields.length === 0);
+    (signUp?.status === "missing_requirements" &&
+      signUp?.unverifiedFields.includes("email_address"));
 
-  const emailError = localErrors.emailAddress ?? errors.fields.emailAddress?.message;
-  const passwordError = localErrors.password ?? errors.fields.password?.message;
+  const emailError = localErrors.emailAddress;
+  const passwordError = localErrors.password;
   const confirmPasswordError = localErrors.confirmPassword;
-  const codeError = localErrors.code ?? errors.fields.code?.message;
+  const codeError = localErrors.code;
 
   const finalizeSignUp = async () => {
     let didNavigate = false;
@@ -89,7 +88,12 @@ export default function SignUp() {
     setLocalErrors(nextErrors);
     setFormError(null);
 
-    if (nextErrors.emailAddress || nextErrors.password || nextErrors.confirmPassword) return;
+    setIsLoading(true);
+
+    if (nextErrors.emailAddress || nextErrors.password || nextErrors.confirmPassword) {
+      setIsLoading(false);
+      return;
+    }
 
     const { error } = await signUp.password({
       emailAddress: emailAddress.trim(),
@@ -97,6 +101,7 @@ export default function SignUp() {
     });
 
     if (error) {
+      setIsLoading(false);
       setFormError(getClerkErrorMessage(error, "We could not create your account."));
       return;
     }
@@ -104,11 +109,13 @@ export default function SignUp() {
     const { error: sendCodeError } = await signUp.verifications.sendEmailCode();
 
     if (sendCodeError) {
+      setIsLoading(false);
       setFormError(getClerkErrorMessage(sendCodeError, "We could not send a verification code."));
       return;
     }
 
     setPendingVerification(true);
+    setIsLoading(false);
   };
 
   const handleVerify = async () => {
@@ -121,9 +128,12 @@ export default function SignUp() {
 
     if (nextErrors.code) return;
 
+    setIsLoading(true);
+
     const { error } = await signUp.verifications.verifyEmailCode({ code: code.trim() });
 
     if (error) {
+      setIsLoading(false);
       setFormError(getClerkErrorMessage(error, "That verification code did not work."));
       return;
     }
@@ -214,19 +224,19 @@ export default function SignUp() {
                         setLocalErrors((current) => ({ ...current, code: null }));
                       }}
                       keyboardType="number-pad"
-                      inputMode="numeric"
-                      autoComplete="one-time-code"
-                      editable={!isFetching}
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        editable={!isLoading}
                     />
                     {codeError ? <Text className="auth-error">{codeError}</Text> : null}
                   </View>
 
                   <Pressable
-                    className={clsx("auth-button", isFetching && "auth-button-disabled")}
+                    className={clsx("auth-button", isLoading && "auth-button-disabled")}
                     onPress={handleVerify}
-                    disabled={isFetching}
+                    disabled={isLoading}
                   >
-                    {isFetching ? (
+                    {isLoading ? (
                       <ActivityIndicator color="#081126" />
                     ) : (
                       <Text className="auth-button-text">Verify account</Text>
@@ -236,12 +246,12 @@ export default function SignUp() {
                   <Pressable
                     className="auth-secondary-button"
                     onPress={handleResendCode}
-                    disabled={isFetching}
+                    disabled={isLoading}
                   >
                     <Text className="auth-secondary-button-text">Send a new code</Text>
                   </Pressable>
 
-                  <Pressable className="items-center py-2" onPress={handleReset} disabled={isFetching}>
+                  <Pressable className="items-center py-2" onPress={handleReset} disabled={isLoading}>
                     <Text className="auth-link">Change email</Text>
                   </Pressable>
                 </View>
@@ -250,21 +260,21 @@ export default function SignUp() {
                   <View className="auth-field">
                     <Text className="auth-label">Email</Text>
                     <TextInput
-                      className={clsx("auth-input", emailError && "auth-input-error")}
-                      value={emailAddress}
-                      placeholder="Enter your email"
-                      placeholderTextColor="rgba(0, 0, 0, 0.45)"
-                      onChangeText={(value) => {
-                        setEmailAddress(value);
-                        setLocalErrors((current) => ({ ...current, emailAddress: null }));
-                      }}
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      keyboardType="email-address"
-                      textContentType="emailAddress"
-                      autoComplete="email"
-                      editable={!isFetching}
-                    />
+                          className={clsx("auth-input", emailError && "auth-input-error")}
+                          value={emailAddress}
+                          placeholder="Enter your email"
+                          placeholderTextColor="rgba(0, 0, 0, 0.45)"
+                          onChangeText={(value) => {
+                            setEmailAddress(value);
+                            setLocalErrors((current) => ({ ...current, emailAddress: null }));
+                          }}
+                          autoCapitalize="none"
+                          autoCorrect={false}
+                          keyboardType="email-address"
+                          textContentType="emailAddress"
+                          autoComplete="email"
+                          editable={!isLoading}
+                        />
                     {emailError ? <Text className="auth-error">{emailError}</Text> : null}
                   </View>
 
@@ -282,7 +292,7 @@ export default function SignUp() {
                       secureTextEntry
                       textContentType="newPassword"
                       autoComplete="new-password"
-                      editable={!isFetching}
+                      editable={!isLoading}
                     />
                     {passwordError ? <Text className="auth-error">{passwordError}</Text> : null}
                   </View>
@@ -301,7 +311,7 @@ export default function SignUp() {
                       secureTextEntry
                       textContentType="newPassword"
                       autoComplete="new-password"
-                      editable={!isFetching}
+                      editable={!isLoading}
                     />
                     {confirmPasswordError ? (
                       <Text className="auth-error">{confirmPasswordError}</Text>
@@ -309,11 +319,11 @@ export default function SignUp() {
                   </View>
 
                   <Pressable
-                    className={clsx("auth-button", isFetching && "auth-button-disabled")}
+                    className={clsx("auth-button", isLoading && "auth-button-disabled")}
                     onPress={handleSubmit}
-                    disabled={isFetching}
+                    disabled={isLoading}
                   >
-                    {isFetching ? (
+                    {isLoading ? (
                       <ActivityIndicator color="#081126" />
                     ) : (
                       <Text className="auth-button-text">Create account</Text>
@@ -323,7 +333,7 @@ export default function SignUp() {
                   <View className="auth-link-row">
                     <Text className="auth-link-copy">Already have an account?</Text>
                     <Link href="/sign-in" asChild>
-                      <Pressable disabled={isFetching}>
+                      <Pressable disabled={isLoading}>
                         <Text className="auth-link">Sign in</Text>
                       </Pressable>
                     </Link>

@@ -36,7 +36,7 @@ export default function App() {
   };
 
   const totalMonthlySpend = useMemo(() => {
-    return subscriptions.reduce((acc, sub) => {
+    return (subscriptions || []).reduce((acc, sub) => {
       const price = sub.price || 0;
       return acc + (sub.frequency === "Yearly" ? price / 12 : price);
     }, 0);
@@ -44,13 +44,12 @@ export default function App() {
 
   // Task 3: Filter upcoming subscriptions (due in 5 days or less)
   const upcoming = useMemo(() => {
-    return subscriptions
-      .filter((sub) => {
-        if (!sub.renewalDate) return false;
-        const diff = dayjs(sub.renewalDate).diff(dayjs(), "day");
-        return diff >= 0 && diff <= 5;
-      })
-      .sort((a, b) => dayjs(a.renewalDate).valueOf() - dayjs(b.renewalDate).valueOf());
+    if (!subscriptions) return [];
+    return subscriptions.filter((sub: any) => {
+      if (!sub?.renewalDate) return false;
+      const daysLeft = dayjs(sub.renewalDate).diff(dayjs(), "day");
+      return daysLeft >= 0 && daysLeft <= 5;
+    });
   }, [subscriptions]);
 
   return (

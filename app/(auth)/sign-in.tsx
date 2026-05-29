@@ -1,25 +1,25 @@
 import { useSignIn } from "@clerk/expo";
+import { clsx } from "clsx";
 import { type Href, Link, useRouter } from "expo-router";
 import { styled } from "nativewind";
 import { useState } from "react";
 import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
-import { clsx } from "clsx";
 
 import {
-  getClerkErrorMessage,
-  validateEmailAddress,
-  validatePassword,
-  validateVerificationCode,
+    getClerkErrorMessage,
+    validateEmailAddress,
+    validatePassword,
+    validateVerificationCode,
 } from "@/lib/auth";
 
 const SafeAreaView = styled(RNSafeAreaView);
@@ -27,7 +27,7 @@ const tabsHref = "/(tabs)" as Href;
 
 export default function SignIn() {
   const router = useRouter();
-  const { signIn, errors, fetchStatus } = useSignIn();
+  const { signIn } = useSignIn();
 
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
@@ -35,11 +35,11 @@ export default function SignIn() {
   const [localErrors, setLocalErrors] = useState<Record<string, string | null>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [needsEmailCode, setNeedsEmailCode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isFetching = fetchStatus === "fetching";
-  const emailError = localErrors.emailAddress ?? errors.fields.identifier?.message;
-  const passwordError = localErrors.password ?? errors.fields.password?.message;
-  const codeError = localErrors.code ?? errors.fields.code?.message;
+  const emailError = localErrors.emailAddress;
+  const passwordError = localErrors.password;
+  const codeError = localErrors.code;
 
   const finalizeSignIn = async () => {
     let didNavigate = false;
@@ -89,6 +89,8 @@ export default function SignIn() {
   };
 
   const handleSubmit = async () => {
+    if (!signIn) return;
+    
     const nextErrors = {
       emailAddress: validateEmailAddress(emailAddress),
       password: validatePassword(password),
@@ -96,8 +98,12 @@ export default function SignIn() {
 
     setLocalErrors(nextErrors);
     setFormError(null);
+    setIsLoading(true);
 
-    if (nextErrors.emailAddress || nextErrors.password) return;
+    if (nextErrors.emailAddress || nextErrors.password) {
+      setIsLoading(false);
+      return;
+    }
 
     const { error } = await signIn.password({
       emailAddress: emailAddress.trim(),
@@ -105,6 +111,7 @@ export default function SignIn() {
     });
 
     if (error) {
+      setIsLoading(false);
       setFormError(getClerkErrorMessage(error, "We could not sign you in."));
       return;
     }
@@ -116,10 +123,12 @@ export default function SignIn() {
 
     if (signIn.status === "needs_client_trust" || signIn.status === "needs_second_factor") {
       await handleSecondFactor();
+      setIsLoading(false);
       return;
     }
 
     setFormError("We need a little more information before signing you in.");
+    setIsLoading(false);
   };
 
   const handleVerify = async () => {
@@ -221,17 +230,17 @@ export default function SignIn() {
                       keyboardType="number-pad"
                       inputMode="numeric"
                       autoComplete="one-time-code"
-                      editable={!isFetching}
+                        editable={!isLoading}
                     />
                     {codeError ? <Text className="auth-error">{codeError}</Text> : null}
                   </View>
 
                   <Pressable
-                    className={clsx("auth-button", isFetching && "auth-button-disabled")}
+                    className={clsx("auth-button", isLoading && "auth-button-disabled")}
                     onPress={handleVerify}
-                    disabled={isFetching}
+                    disabled={isLoading}
                   >
-                    {isFetching ? (
+                    {isLoading ? (
                       <ActivityIndicator color="#081126" />
                     ) : (
                       <Text className="auth-button-text">Verify and continue</Text>
@@ -241,12 +250,12 @@ export default function SignIn() {
                   <Pressable
                     className="auth-secondary-button"
                     onPress={handleResendCode}
-                    disabled={isFetching}
+                    disabled={isLoading}
                   >
                     <Text className="auth-secondary-button-text">Send a new code</Text>
                   </Pressable>
 
-                  <Pressable className="items-center py-2" onPress={handleReset} disabled={isFetching}>
+                  <Pressable className="items-center py-2" onPress={handleReset} disabled={isLoading}>
                     <Text className="auth-link">Start over</Text>
                   </Pressable>
                 </View>
@@ -268,7 +277,7 @@ export default function SignIn() {
                       keyboardType="email-address"
                       textContentType="emailAddress"
                       autoComplete="email"
-                      editable={!isFetching}
+                      editable={!isLoading}
                     />
                     {emailError ? <Text className="auth-error">{emailError}</Text> : null}
                   </View>
@@ -287,17 +296,17 @@ export default function SignIn() {
                       secureTextEntry
                       textContentType="password"
                       autoComplete="password"
-                      editable={!isFetching}
+                      editable={!isLoading}
                     />
                     {passwordError ? <Text className="auth-error">{passwordError}</Text> : null}
                   </View>
 
                   <Pressable
-                    className={clsx("auth-button", isFetching && "auth-button-disabled")}
+                    className={clsx("auth-button", isLoading && "auth-button-disabled")}
                     onPress={handleSubmit}
-                    disabled={isFetching}
+                    disabled={isLoading}
                   >
-                    {isFetching ? (
+                    {isLoading ? (
                       <ActivityIndicator color="#081126" />
                     ) : (
                       <Text className="auth-button-text">Sign in</Text>
@@ -313,7 +322,7 @@ export default function SignIn() {
                   <View className="auth-link-row">
                     <Text className="auth-link-copy">New to Recurly?</Text>
                     <Link href="/sign-up" asChild>
-                      <Pressable disabled={isFetching}>
+                      <Pressable disabled={isLoading}>
                         <Text className="auth-link">Create an account</Text>
                       </Pressable>
                     </Link>

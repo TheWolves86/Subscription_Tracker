@@ -1,21 +1,43 @@
 import "@/global.css";
 
+import { SubscriptionProvider } from "@/Components/SubscriptionContext";
 import { ClerkProvider, useAuth } from "@clerk/expo";
-import { tokenCache } from "@clerk/expo/token-cache";
+import Constants from "expo-constants";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+const publishableKey =
+  process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+  Constants.expoConfig?.extra?.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (!publishableKey) {
-  throw new Error("Add your Clerk Publishable Key to the .env file");
+  throw new Error(
+    "Add your Clerk Publishable Key to the .env file or app.json extra"
+  );
 }
 
-const clerkPublishableKey = publishableKey;
+// Clerk requires a token cache for Expo. Standard implementation:
+const tokenCache = {
+  async getToken(key: string) {
+    try {
+      return SecureStore.getItemAsync(key);
+    } catch (err) {
+      return null;
+    }
+  },
+  async saveToken(key: string, value: string) {
+    try {
+      return SecureStore.setItemAsync(key, value);
+    } catch (err) {
+      return;
+    }
+  },
+};
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -36,11 +58,15 @@ export default function RootLayout() {
       }
     }, [fontsLoaded, isLoaded]);
 
-    return <>{children}</>;
+    if (!fontsLoaded || !isLoaded) {
+      return null;
+    }
+
+    return <SubscriptionProvider>{children}</SubscriptionProvider>;
   }
 
   return (
-    <ClerkProvider publishableKey={clerkPublishableKey} tokenCache={tokenCache}>
+    <ClerkProvider publishableKey={publishableKey!} tokenCache={tokenCache}>
       <SafeAreaProvider>
         <SplashGate>
           <Stack screenOptions={{ headerShown: false }} />
