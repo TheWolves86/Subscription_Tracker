@@ -7,7 +7,7 @@
     "icon": "./assets/icons/logo.png",
     "scheme": "basicstart",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
