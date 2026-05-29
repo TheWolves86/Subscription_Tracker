@@ -25,7 +25,7 @@ if (!publishableKey) {
 const tokenCache = {
   async getToken(key: string) {
     try {
-      return SecureStore.getItemAsync(key);
+      return SecureStore.getItemAsync(key)
     } catch (err) {
       return null;
     }
