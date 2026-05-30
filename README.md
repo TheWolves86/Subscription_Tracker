@@ -5,9 +5,13 @@ This is a React Native(Expo) app which can be used totrack subscription payments
 # Current Features
 
 1.Add Subscriptions
+
 2.Track Monthly payments
+
 3.Auth with Clerk
+
 4.Clean ui
+
 5.Search and view all ur subscription
 
 # Future Direction
@@ -17,9 +21,13 @@ The project is currently focused on subscription tracking but the long term goal
 # Tech Stack
 
 1.React Native with expo
+
 2.Nativewind for tailwing like styling
+
 3.Clerk for auth
+
 4.TypeScript
+
 5.Async Storage
 
 # Installation
