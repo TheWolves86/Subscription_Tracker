@@ -1,50 +1,59 @@
-# Welcome to your Expo app 👋
+# Welcome to Subscription Tracker 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is a React Native(Expo) app which can be used totrack subscription payments.
 
-## Get started
+# Current Features
 
-1. Install dependencies
+1.Add Subscriptions
+2.Track Monthly payments
+3.Auth with Clerk
+4.Clean ui
+5.Search and view all ur subscription
 
-   ```bash
-   npm install
-   ```
+# Future Direction
 
-2. Start the app
+The project is currently focused on subscription tracking but the long term goal is to transform it into a Expense Tracker which will track all your expenses
 
-   ```bash
-   npx expo start
-   ```
+# Tech Stack
 
-In the output, you'll find options to open the app in a
+1.React Native with expo
+2.Nativewind for tailwing like styling
+3.Clerk for auth
+4.TypeScript
+5.Async Storage
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+# Installation
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+   1.Android-
 
-## Get a fresh project
+      Download the apk from the guthub release
+   
+   2.Ios
 
-When you're ready, run:
+      1.Clone the github repo
 
-```bash
-npm run reset-project
-```
+      2.Run "npm install" to install dependency
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+      3.Run "npm expo start"
 
-## Learn more
+      4.Open ur ios camera
 
-To learn more about developing your project with Expo, look at the following resources:
+      Btw it will be in sandboxed and not in real apllication and if u want a application wait for it
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+# Ai Usage
 
-## Join the community
+I am a begginer and I have just learned react native so I was not familier things.
+The things in which I used ai for-
 
-Join our community of developers creating universal apps.
+1.Setting up clerk authentication
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+2.Solving depedency issues
+
+# Why I built this
+
+Managing subscriptions is annoying when payments are spread across multiple services.
+
+I wanted a simple mobile app that helps keep track of recurring payments while also serving as a stepping stone toward building a full Expense Tracker.
+
+Thank You!
+
