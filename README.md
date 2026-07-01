@@ -63,5 +63,15 @@ Managing subscriptions is annoying when payments are spread across multiple serv
 
 I wanted a simple mobile app that helps keep track of recurring payments while also serving as a stepping stone toward building a full Expense Tracker.
 
+# Demo Video
+
+
+
+https://github.com/user-attachments/assets/0d9b487c-c2bd-4a7b-9745-1df1bd8ddb20
+
+
+
+
+
 Thank You!
 
